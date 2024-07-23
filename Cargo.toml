@@ -1,0 +1,12 @@
+[package]
+name = "rimap"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+imap = "2.4.1"
+native-tls = "0.2"
+
+# musl
+# imap = { version = "2.4.1", default-features = false }
+# rustls-connector = { version = "0.21.0", features = ["webpki-roots-certs"] }
