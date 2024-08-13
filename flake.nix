@@ -12,7 +12,6 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-      # DevShell for your project
       devShell = pkgs.mkShell {
         buildInputs = [
           pkgs.rustup
@@ -23,6 +22,30 @@
         shellHook = ''
           rustup default stable
         '';
+      };
+
+      packages.default = pkgs.rustPlatform.buildRustPackage {
+        pname = "rimap";
+        version = "1.0.0";
+
+        src = ./.;
+
+        cargoLock = {
+          lockFile = ./Cargo.lock;
+        };
+
+        cargoPatches = [];
+
+        nativeBuildInputs = [ pkgs.pkg-config ];
+        buildInputs = [ pkgs.openssl ];
+
+        meta = with pkgs.lib; {
+          maintainers = [ maintainers.iruzo ];
+          homepage = "https://github.com/iruzo/rimap";
+          description = "IMAP downloader";
+          license = licenses.mit;
+          platforms = platforms.all;
+        };
       };
 
     });
