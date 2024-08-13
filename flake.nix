@@ -20,6 +20,9 @@
           pkgs.openssl
           pkgs.git
         ];
+        shellHook = ''
+          rustup default stable
+        '';
       };
 
     });
