@@ -22,7 +22,7 @@ CONFIG_FILE="./.rimap_tmp_config_file"
 # Find an available container tool (docker or podman)
 find_container_tool() {
     if command -v docker > /dev/null 2>&1; then
-        echo "docker"
+        echo "sudo docker"
     elif command -v podman > /dev/null 2>&1; then
         echo "podman"
     else
