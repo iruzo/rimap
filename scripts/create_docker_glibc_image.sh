@@ -35,7 +35,7 @@ find_cargo_toml() {
 CARGO_DIR=$(find_cargo_toml)
 
 # Set the Dockerfile path relative to the Cargo.toml directory
-DOCKERFILE_PATH="$CARGO_DIR/docker/alpine_glibc.Dockerfile"
+DOCKERFILE_PATH="$CARGO_DIR/docker/nix_glibc.Dockerfile"
 
 # Build the container image using the determined Dockerfile
 $CONTAINER_TOOL build -f "$DOCKERFILE_PATH" -t rimap .
