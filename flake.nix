@@ -15,12 +15,12 @@
       devShell = pkgs.mkShell {
         buildInputs = [
           pkgs.rustup
-          pkgs.rust-analyzer
           pkgs.openssl
           pkgs.git
         ];
         shellHook = ''
           rustup default stable
+          rust-analyzer --version 2> /dev/null || rustup component add rust-analyzer
         '';
       };
 
