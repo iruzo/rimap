@@ -4,8 +4,12 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
+csv = "1.1"
 imap = "2.4.1"
 native-tls = "0.2"
+
+# [profile.release]
+# lto = true
 
 # musl
 # imap = { version = "2.4.1", default-features = false }

@@ -16,23 +16,25 @@ cargo run -- config_file_path
 <details>
   <summary>Docker/Podman</summary>
 
+- Create an empty directory
+- Generate put there your config file with the name `config`
+- Inside that directory, execute the next command:
 ```sh
-# Clone repository
-sh scripts/create_docker_glibc_image.sh # generate image with binary inside
-sh scripts/run_docker_glibc_container.sh <config_file> # run docker container
+sh -c "$(curl -sSL https://raw.githubusercontent.com/iruzo/rimap/main/scripts/oneline.sh)"
 ```
-> You need docker or podman
+> You need docker compose or podman compose and git
 </details>
 
 
 ## Config file example
 ```ini
-server=imap.server.com
-username=username
-password=password
-local_dir=/download/dir/path
+imap.server1.com,username1,password1,/download/dir
+imap.server2.com,username2,password2,/download/dir
+imap.server3.com,username3,password3,/download/dir
+imap.server4.com,username4,password4,/download/dir
+imap.server5.com,username5,password5,/download/dir
 ```
-
-> The musl version with rustls is still under development
+- Do not write headers in the csv
+- You can use the same directory for every email since the program will create inside that dir another subdir for every email config
 
 > OAUTH still not implemented
