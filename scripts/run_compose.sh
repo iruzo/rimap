@@ -1,9 +1,40 @@
 #!/bin/sh
 
-# Extract the local_dir value from the config file
-MAILS_DIRECTORY="./mails"
+if [ "$#" -lt 2 ]; then
+    printf "Usage: %s <config_file_path> <mails_dir_path>\n" "$0"
+    show_help
+    exit 1
+fi
+
+
+get_absolute_path() {
+    # Check if the argument is provided
+    if [ -z "$1" ]; then
+        echo "No path provided."
+        return 1
+    fi
+
+    # Store the input path
+    INPUT_PATH="$1"
+
+    # Check if the path is absolute
+    case "$INPUT_PATH" in
+        /*)
+            echo "$INPUT_PATH"  # Return absolute path
+            ;;
+        *)
+            # Convert relative path to absolute
+            ABSOLUTE_PATH=$(cd "$(dirname "$INPUT_PATH")"; pwd)/$(basename "$INPUT_PATH")
+            echo "$ABSOLUTE_PATH"  # Return the converted absolute path
+            ;;
+    esac
+}
+
+CONFIG_FILE_PATH=$(get_absolute_path "$1")
+MAILS_DIR_PATH=$(get_absolute_path "$2")
+
 # Create the directory if it doesn't exist
-mkdir -p "$MAILS_DIRECTORY" 2> /dev/null
+mkdir -p "$MAILS_DIR_PATH" 2> /dev/null
 
 # Find an available container tool (docker or podman)
 find_container_tool() {
@@ -20,9 +51,12 @@ find_container_tool() {
 # Determine which container tool to use
 CONTAINER_TOOL=$(find_container_tool)
 
+# Determine script's dir
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
 # Find the directory containing the cargo.toml by traversing up the directory tree
 find_cargo() {
-    DIR=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
+    DIR="$SCRIPT_DIR"
     while [ "$DIR" != "/" ]; do
         if ls "$DIR"/Cargo.toml 1> /dev/null 2>&1; then
             echo "$DIR"
@@ -38,5 +72,5 @@ find_cargo() {
 CARGO_DIR=$(find_cargo)
 
 # Run the container with the specified configuration and directory volumes
-sh "$CARGO_DIR/scripts/stop_compose.sh"
-$CONTAINER_TOOL compose -p rimap -f "$CARGO_DIR/docker-compose.yml" up
+sh "$SCRIPT_DIR/stop_compose.sh"
+CONFIG_FILE_PATH="$CONFIG_FILE_PATH" MAILS_DIR_PATH="$MAILS_DIR_PATH" $CONTAINER_TOOL compose -p rimap -f "$CARGO_DIR/docker-compose.yml" up
