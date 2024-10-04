@@ -15,9 +15,12 @@ find_container_tool() {
 # Determine which container tool to use
 CONTAINER_TOOL=$(find_container_tool)
 
+# Determine script's dir
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
 # Find the directory containing the cargo.toml by traversing up the directory tree
 find_cargo() {
-    DIR=$(cd "$(dirname "$0")" && pwd)/$(basename "$0")
+    DIR="$SCRIPT_DIR"
     while [ "$DIR" != "/" ]; do
         if ls "$DIR"/Cargo.toml 1> /dev/null 2>&1; then
             echo "$DIR"
@@ -32,4 +35,28 @@ find_cargo() {
 # Locate the directory containing Cargo.toml
 CARGO_DIR=$(find_cargo)
 
-$CONTAINER_TOOL compose -p rimap -f "$CARGO_DIR/docker-compose.yml" down
+# Check SELinux status and set appropriate mount option
+check_selinux() {
+    if command -v getenforce > /dev/null 2>&1; then
+        SELINUX_STATUS=$(getenforce)
+        if [ "$SELINUX_STATUS" = "Enforcing" ] || [ "$SELINUX_STATUS" = "Permissive" ]; then
+            echo ":z"
+        else
+            echo ""
+        fi
+    elif [ -f /sys/fs/selinux/enforce ]; then
+        if [ "$(cat /sys/fs/selinux/enforce)" = "1" ]; then
+            echo ":z"
+        else
+            echo ""
+        fi
+    else
+        echo ""
+    fi
+}
+
+# Get the SELinux option for volume mounts if SELinux is enforcing or permissive
+SELINUX=$(check_selinux)
+
+sh "$SCRIPT_DIR/del.sh"
+$CONTAINER_TOOL build -t rimap -f "$CARGO_DIR/docker/nix_glibc.Dockerfile" "$CARGO_DIR"

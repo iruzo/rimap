@@ -33,17 +33,19 @@ get_absolute_path() {
 CONFIG_FILE_PATH=$(get_absolute_path "$1")
 MAILS_DIR_PATH=$(get_absolute_path "$2")
 
+echo $CONFIG_FILE_PATH
+echo $MAILS_DIR_PATH
+
 # Delete repository dir
 rm -rf rimap
 
 # Clone repository
 git clone https://github.com/iruzo/rimap
 
-# Copy config inside repository
-cp config rimap/
-
-# Execute script
-sh rimap/scripts/build_compose.sh "$CONFIG_FILE_PATH" "$MAILS_DIR_PATH"
+# Execute scripts
+sh rimap/scripts/build.sh
+sh rimap/scripts/run.sh "$CONFIG_FILE_PATH" "$MAILS_DIR_PATH"
+sh rimap/scripts/del.sh
 
 # Delete repository dir
 rm -rf rimap

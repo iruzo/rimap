@@ -71,11 +71,28 @@ find_cargo() {
 # Locate the directory containing Cargo.toml
 CARGO_DIR=$(find_cargo)
 
+# Check SELinux status and set appropriate mount option
+check_selinux() {
+    if command -v getenforce > /dev/null 2>&1; then
+        SELINUX_STATUS=$(getenforce)
+        if [ "$SELINUX_STATUS" = "Enforcing" ] || [ "$SELINUX_STATUS" = "Permissive" ]; then
+            echo ":z"
+        else
+            echo ""
+        fi
+    elif [ -f /sys/fs/selinux/enforce ]; then
+        if [ "$(cat /sys/fs/selinux/enforce)" = "1" ]; then
+            echo ":z"
+        else
+            echo ""
+        fi
+    else
+        echo ""
+    fi
+}
+
+# Get the SELinux option for volume mounts if SELinux is enforcing or permissive
+SELINUX=$(check_selinux)
+
 # Run the container with the specified configuration and directory volumes
-sh "$SCRIPT_DIR/stop_compose.sh"
-$CONTAINER_TOOL container prune -f
-$CONTAINER_TOOL image prune -f
-$CONTAINER_TOOL volume prune -f
-CONFIG_FILE_PATH="$CONFIG_FILE_PATH" MAILS_DIR_PATH="$MAILS_DIR_PATH" $CONTAINER_TOOL compose -p rimap -f "$CARGO_DIR/docker-compose.yml" up --build
-sh "$SCRIPT_DIR/stop_compose.sh"
-$CONTAINER_TOOL image rm rimap:latest
+$CONTAINER_TOOL run --rm -v "$CONFIG_FILE_PATH:/config$SELINUX" -v "$MAILS_DIR_PATH:/mails$SELINUX" rimap

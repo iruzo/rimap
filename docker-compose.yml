@@ -1,9 +1,0 @@
-services:
-  rimap:
-    build:
-      context: .
-      dockerfile: docker/nix_glibc.Dockerfile
-    image: rimap:latest
-    volumes:
-      - ${CONFIG_FILE_PATH}:/config
-      - ${MAILS_DIR_PATH}:/mails

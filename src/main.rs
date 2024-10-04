@@ -176,6 +176,8 @@ fn download_emails(
                 let mut file = File::create(email_path)?;
                 file.write_all(body)?;
                 println!("Downloaded {}|{}|{}", server, username, email_filename);
+            } else {
+                println!("Mail already present: {}|{}|{}", server, username, email_filename);
             }
         }
     }
