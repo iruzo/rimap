@@ -1,6 +1,8 @@
 use csv::ReaderBuilder;
 use imap::Session;
 use native_tls::TlsConnector;
+use rayon::iter::IntoParallelIterator;
+use rayon::iter::ParallelIterator;
 use std::env;
 use std::fs::{self, File};
 use std::io::{BufRead, Write};
@@ -195,28 +197,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let use_docker_path = args.get(2).map_or(false, |arg| arg == "--docker");
     let configs = read_config(config_path)?;
 
-    for config in configs {
+    configs.into_par_iter().for_each(|config| {
         let local_dir = Path::new(&config.local_dir);
-        if !use_docker_path {
-            fs::create_dir_all(local_dir)?;
-        }
-
-        let mut session = connect_to_server(&config)?;
-        let mailboxes = list_all_mailboxes(&mut session)?;
+        let mut session = connect_to_server(&config).unwrap();
+        let mailboxes = list_all_mailboxes(&mut session).unwrap();
 
         for mailbox in mailboxes {
-            session.select(&mailbox)?;
-            download_emails(
-                &mut session,
-                local_dir,
-                &config.server,
-                &config.username,
-                use_docker_path,
-            )?;
+            session.select(&mailbox).unwrap();
+            download_emails(&mut session, local_dir, &config.server, &config.username, use_docker_path).unwrap();
         }
 
-        session.logout()?;
-    }
+        session.logout().unwrap();
+    });
 
     Ok(())
 }
