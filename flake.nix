@@ -17,10 +17,13 @@
           pkgs.rustup
           pkgs.openssl
           pkgs.git
+          pkgs.zsh
         ];
         shellHook = ''
+          SHELL="zsh"
           rustup default stable
           rust-analyzer --version 2> /dev/null || rustup component add rust-analyzer
+          exec zsh --no-rcs
         '';
       };
 
