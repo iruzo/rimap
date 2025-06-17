@@ -8,6 +8,8 @@ csv = "1.1"
 imap = "2.4.1"
 native-tls = "0.2"
 rayon = "1.7"
+lexical-core = "~1.0.0"
+openssl = "~0.10.70"
 
 # [profile.release]
 # lto = true

@@ -59,4 +59,4 @@ check_selinux() {
 SELINUX=$(check_selinux)
 
 sh "$SCRIPT_DIR/del.sh"
-$CONTAINER_TOOL build -t rimap -f "$CARGO_DIR/docker/nix_glibc.Dockerfile" "$CARGO_DIR"
+$CONTAINER_TOOL build -t rimap -f "$CARGO_DIR/docker/alpine_glibc.Dockerfile" "$CARGO_DIR"
