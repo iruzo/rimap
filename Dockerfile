@@ -7,8 +7,7 @@ RUN rustup default stable
 RUN USER=root cargo new --bin rimap
 WORKDIR /rimap
 
-COPY Cargo.toml Cargo.lock ./
-COPY src ./src
+COPY . .
 
 # Build
 RUN RUSTFLAGS="-Ctarget-feature=-crt-static" cargo build --release

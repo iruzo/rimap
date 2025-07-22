@@ -17,7 +17,7 @@ cargo run -- config_file_path
   <summary>Docker/Podman</summary>
 
 ```sh
-sh <(curl -L https://raw.githubusercontent.com/iruzo/rimap/main/scripts/oneline.sh) <config_file_path> <mails_dir_path>
+sh <(curl -L https://raw.githubusercontent.com/iruzo/rimap/main/scripts/run.sh) <config_file_path> <mails_dir_path>
 ```
 </details>
 

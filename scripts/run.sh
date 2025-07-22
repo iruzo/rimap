@@ -33,8 +33,8 @@ get_absolute_path() {
 CONFIG_FILE_PATH=$(get_absolute_path "$1")
 MAILS_DIR_PATH=$(get_absolute_path "$2")
 
-# Create the directory if it doesn't exist
-mkdir -p "$MAILS_DIR_PATH" 2> /dev/null
+echo $CONFIG_FILE_PATH
+echo $MAILS_DIR_PATH
 
 # Find an available container tool (docker or podman)
 find_container_tool() {
@@ -48,28 +48,10 @@ find_container_tool() {
     fi
 }
 
-# Determine which container tool to use
 CONTAINER_TOOL=$(find_container_tool)
 
-# Determine script's dir
-SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-
-# Find the directory containing the cargo.toml by traversing up the directory tree
-find_cargo() {
-    DIR="$SCRIPT_DIR"
-    while [ "$DIR" != "/" ]; do
-        if ls "$DIR"/Cargo.toml 1> /dev/null 2>&1; then
-            echo "$DIR"
-            return
-        fi
-        DIR=$(dirname "$DIR")
-    done
-    echo "Error: Solution not found in the directory hierarchy." >&2
-    exit 1
-}
-
-# Locate the directory containing Cargo.toml
-CARGO_DIR=$(find_cargo)
+# build image
+$CONTAINER_TOOL build -t rimap:latest https://github.com/iruzo/rimap.git#main
 
 # Check SELinux status and set appropriate mount option
 check_selinux() {
